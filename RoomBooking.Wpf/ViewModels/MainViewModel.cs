@@ -1,36 +1,113 @@
-﻿using RoomBooking.Wpf.Common;
+﻿using RoomBooking.Core.Contracts;
+using RoomBooking.Core.Entities;
+using RoomBooking.Persistence;
+using RoomBooking.Wpf.Common;
 using RoomBooking.Wpf.Common.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 
 namespace RoomBooking.Wpf.ViewModels
 {
-  public class MainViewModel : BaseViewModel
-  {
-    
-        
-        
-    public MainViewModel(IWindowController windowController) : base(windowController)
+    public class MainViewModel : BaseViewModel
     {
-    }
+        private Booking _selectedBooking;
+        private Room _selectedRoom;
+        private ObservableCollection<Room> _rooms;
+        private ObservableCollection<Booking> _bookings;
 
-    private Task LoadDataAsync()
-    {
-      throw new NotImplementedException();
-    }
+        public Booking SelectedBooking 
+        { 
+            get
+            {
+                return _selectedBooking;
+            }
+            set
+            {
+                _selectedBooking = value;
+                OnPropertyChanged(nameof(SelectedBooking));
+            }
+        }
 
-    public static async Task<MainViewModel> CreateAsync(IWindowController windowController)
-    {
-      var viewModel = new MainViewModel(windowController);
-      await viewModel.LoadDataAsync();
-      return viewModel;
-    }
+        public Room SelectedRoom
+        {
+            get
+            {
+                return _selectedRoom;
+            }
+            set
+            {
+                _selectedRoom = value;
+                OnPropertyChanged(nameof(SelectedRoom));
+                OnNewRoomSelectedAsync().ContinueWith(x => { });
+            }
+        }
 
-    public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-      throw new NotImplementedException();
+        private async Task OnNewRoomSelectedAsync()
+        {
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                var bookings = await uow.Bookings.GetByRoomWithCustomerAsync(_selectedRoom.Id);
+                Bookings = new ObservableCollection<Booking>(bookings);
+            }
+            SelectedBooking = Bookings.First();
+        }
+
+        public ObservableCollection<Room> Rooms 
+        { 
+            get
+            {
+                return _rooms;
+            }
+            set
+            {
+                _rooms = value;
+                OnPropertyChanged(nameof(Rooms));
+            }
+        }
+
+        public ObservableCollection<Booking> Bookings 
+        { 
+            get
+            {
+                return _bookings;
+            }
+            set
+            {
+                _bookings = value;
+                OnPropertyChanged(nameof(Bookings));
+            }
+        }
+
+        public MainViewModel(IWindowController windowController) : base(windowController)
+        {
+        }
+
+        private async Task LoadDataAsync()
+        {
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                var rooms = await uow.Rooms.GetAllAsync();
+                Rooms = new ObservableCollection<Room>(rooms);
+                _selectedRoom = Rooms.First();
+                await OnNewRoomSelectedAsync();
+            }
+        }
+
+        public static async Task<MainViewModel> CreateAsync(IWindowController windowController)
+        {
+            var viewModel = new MainViewModel(windowController);
+            await viewModel.LoadDataAsync();
+            return viewModel;
+        }
+
+        public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            throw new NotImplementedException();
+        }
     }
-  }
 }

@@ -17,18 +17,19 @@
             <ComboBox Margin="6" 
                       Width="120" 
                       ItemsSource="{Binding Path=Rooms}"
+                      DisplayMemberPath= "RoomNumber"
                       SelectedItem="{Binding Path=SelectedRoom}"></ComboBox>
         </StackPanel>
-        <ListView Grid.Row="1" ItemsSource="{Binding Bookings}" Margin="40,0,40,0">
+        <ListView Grid.Row="1" ItemsSource="{Binding Bookings}" SelectedItem="{Binding SelectedBooking}" Margin="40,0,40,0">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="60" Header="FROM" DisplayMemberBinding="{Binding Path=From}"/>
                     <GridViewColumn Width="60" Header="To" DisplayMemberBinding="{Binding Path=To}"/>
-                    <GridViewColumn Width="170" Header="Customer" DisplayMemberBinding="{Binding Path=FullName}"/>
+                    <GridViewColumn Width="170" Header="Customer" DisplayMemberBinding="{Binding Path=Customer.FullName}"/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Grid.Row="2" Content = "{Binding ElementName=SelectedBooking.Customer, Path=FullName}" Command="{Binding Path=CmdEditCustomer}"></Button>
+        <Button Grid.Row="2" Content = "{Binding Path=SelectedBooking.Customer.FullName}" Command="{Binding Path=CmdEditCustomer}"></Button>
     </Grid>
 </controls:MetroWindow>
 
