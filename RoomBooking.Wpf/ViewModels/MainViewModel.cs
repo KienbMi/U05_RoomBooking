@@ -54,13 +54,18 @@ namespace RoomBooking.Wpf.ViewModels
             {
                 return;
             }
-            
+
+            Booking selectedBookingTmp = SelectedBooking;
+
             using (IUnitOfWork uow = new UnitOfWork())
             {
                 var bookings = await uow.Bookings.GetByRoomWithCustomerAsync(_selectedRoom.Id);
                 Bookings = new ObservableCollection<Booking>(bookings);
             }
-            SelectedBooking = Bookings.First();
+            if (selectedBookingTmp == null)
+                SelectedBooking = Bookings.First();
+            else
+                SelectedBooking = selectedBookingTmp;
         }
 
         public ObservableCollection<Room> Rooms 
@@ -125,11 +130,11 @@ namespace RoomBooking.Wpf.ViewModels
                 if (_cmdEditCustomer == null)
                 {
                     _cmdEditCustomer = new RelayCommand(
-                        execute: _ => 
+                        execute: async _ => 
                         {
                             var window = new EditCustomerModel(Controller, SelectedBooking.Customer);
                             window.Controller.ShowWindow(window, true);
-                            LoadDataAsync().ContinueWith(_ => { });
+                            await OnNewRoomSelectedAsync();
                         },
                         canExecute: _ => SelectedBooking != null);
                 }      
