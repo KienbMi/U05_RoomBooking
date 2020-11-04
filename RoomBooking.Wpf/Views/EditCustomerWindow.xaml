@@ -15,18 +15,23 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0">Zuname:</TextBlock>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=LastName}"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=LastName, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Row="1" Grid.Column="0">Vorname:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=FirstName}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=FirstName, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Row="2" Grid.Column="0">Iban:</TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=Iban}"/>
-        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=Iban, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+               Style="{StaticResource ResourceKey=ErrorCaptionStyle}"
+               Content="{Binding DbError}"/>
+        <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
