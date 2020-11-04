@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 
 namespace RoomBooking.Wpf.ViewModels
@@ -49,6 +50,11 @@ namespace RoomBooking.Wpf.ViewModels
 
         private async Task OnNewRoomSelectedAsync()
         {
+            if (_selectedRoom == null)
+            {
+                return;
+            }
+            
             using (IUnitOfWork uow = new UnitOfWork())
             {
                 var bookings = await uow.Bookings.GetByRoomWithCustomerAsync(_selectedRoom.Id);
@@ -108,6 +114,27 @@ namespace RoomBooking.Wpf.ViewModels
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             throw new NotImplementedException();
+        }
+
+        //Commands
+        private ICommand _cmdEditCustomer;
+        public ICommand CmdEditCustomer 
+        { 
+            get
+            {
+                if (_cmdEditCustomer == null)
+                {
+                    _cmdEditCustomer = new RelayCommand(
+                        execute: _ => 
+                        {
+                            var window = new EditCustomerModel(Controller, SelectedBooking.Customer);
+                            window.Controller.ShowWindow(window, true);
+                            LoadDataAsync().ContinueWith(_ => { });
+                        },
+                        canExecute: _ => SelectedBooking != null);
+                }      
+                return _cmdEditCustomer;
+            }
         }
     }
 }

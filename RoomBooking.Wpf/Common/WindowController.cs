@@ -20,6 +20,7 @@ namespace RoomBooking.Wpf.Common
         null => throw new ArgumentNullException(nameof(viewModel)),
 
         MainViewModel _ => new MainWindow(),
+        EditCustomerModel _ => new EditCustomerWindow(),
 
         // default -> InvalidOperationException
         _ => throw new InvalidOperationException($"Unbekanntes ViewModel '{viewModel}'"),
